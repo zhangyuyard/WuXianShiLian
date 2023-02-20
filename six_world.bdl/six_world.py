@@ -183,23 +183,6 @@ def checkMapLevel(le = 0):
         return [False,]
     else:
         return posi
-    # p4 = matchImg("sw_level_4.png", 0.9)
-    # p5 = matchImg("sw_level_5.png", 0.9)
-    # p6 = matchImg("sw_level_6.png", 0.9)
-    # p7 = matchImg("sw_level_7.png", 0.9)
-    # if p4[0]:
-    #     curLevel = 4
-    #     return p4
-    # if p5[0]:
-    #     curLevel = 5
-    #     return p5
-    # if p6[0]:
-    #     curLevel = 6
-    #     return p6
-    # if p7[0]:
-    #     curLevel = 7
-    #     return p7
-    # return [False,]
 
 def clickMap():
     pos = matchImg("sw_unselect_map.png")
@@ -245,7 +228,8 @@ def enterMap():
 def outTheMap():
     global fighting
     myPrint("out the map ?")
-    posi = matchImg("sw_in_sixworld.png")
+    posi = matchImg("sw_select_map_panel.png")
+    # posi = matchImg("sw_in_sixworld.png")
     if posi[0]:
         fighting = False
         # setCurStatus("PRE_READY")

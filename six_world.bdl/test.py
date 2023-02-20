@@ -15,14 +15,15 @@ finally:
     sys.path.append(pwd)
 
 from utility.common import *
-from utility.adventure import *
+# from utility.adventure import *
 
 def test():
     # posi = matchImg("sw_DuXinMang_fight.png")
     # posi = matchImg("autofight_off.png", 0.95)
-    # posi2 = matchImg("autofight_on.png", 0.95)
-    posi3 = matchImg("rest_around.png")
-    # posi3 = matchImg("sw_no_map.png")
+    # posi = matchImg("autofight_on.png", 0.95)
+    # posi = matchImg("sw_blue_border.png")
+    # posi = matchImg("sw_white_border.png")
+    posi = matchImg("sw_no_map.png")
     return posi
 
 

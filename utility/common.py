@@ -11,7 +11,7 @@ addrs = [
 "10.1.227.102", #客户端IP
 "192.168.8.151", #客户端IP
 ]
-ipAddr = addrs[1]
+ipAddr = addrs[2]
 device = zxtouch(ipAddr) # create instance
 #device = zxtouch(addrs[1]) # create instance
 
@@ -55,14 +55,16 @@ def click(pos, delay=1):
         mySleep(delay)
 
 def matchImg(path, acceptable_value=0.8, max_try_times=5, scaleRation=0.8):
+    # 图片长宽不可过大，否则报错，string index out of range
     try:
         template_path = f'{rootPath}images/{path}'
         # myPrint(path)
         result_tuple = device.image_match(template_path, acceptable_value, max_try_times, scaleRation)
     except Exception as err:
         myPrint(type(err))
-        myPrint(f'matchImg error: {err}')
-        return [False, ]
+        errTxt = f'matchImg error: {err}'
+        myPrint(errTxt)
+        return [False, errTxt]
     if not result_tuple[0]:
         # print("Error happens while matching template image. Error info: " + result_tuple[1])
         return [False, "Error happens while matching template image. Error info: " + result_tuple[1]]
