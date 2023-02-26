@@ -298,10 +298,10 @@ def clickMonsterCard():
 def withFight():
     '''普通战斗'''
     global catchingEnd
-    myPrint("batter with sb")
     # 普通战斗
     posi = matchImg("sw_with_fight.png")
     if posi[0]:
+        myPrint("batter with sb")
         Position["sw_with_fight"] = posi
         click(posi)
         checkAutoFight()
@@ -332,7 +332,7 @@ def treasure():
 
 def distinguishBattleKind():
     '''各类奇遇分别处理'''
-
+    global curLevel
     adventureType(curLevel)
 
     setCurStatus("ALTAR")
