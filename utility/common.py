@@ -11,7 +11,7 @@ addrs = [
 "10.1.227.102", #客户端IP
 "192.168.8.151", #客户端IP
 ]
-ipAddr = addrs[2]
+ipAddr = addrs[1]
 device = zxtouch(ipAddr) # create instance
 #device = zxtouch(addrs[1]) # create instance
 
@@ -60,22 +60,22 @@ def matchImg(path, acceptable_value=0.8, max_try_times=5, scaleRation=0.8):
         template_path = f'{rootPath}images/{path}'
         # myPrint(path)
         result_tuple = device.image_match(template_path, acceptable_value, max_try_times, scaleRation)
+        if not result_tuple[0]:
+        # print("Error happens while matching template image. Error info: " + result_tuple[1])
+            return [False, "Error happens while matching template image. Error info: " + result_tuple[1]]
+        else:
+            result_dict = result_tuple[1]
+            if float(result_dict["width"]) != 0 and float(result_dict["height"]) != 0:
+                # print("Match success! [" + path.split(".")[0] + "] X: " + result_dict["x"] + ". Y: " + result_dict["y"] + ". Width: " + result_dict["width"] + ". Height: " + result_dict["height"])
+                return [float(result_dict["x"]), float(result_dict["y"]), float(result_dict["width"]), float(result_dict["height"])]
+            else:
+                # print("Match failed. Cannot find template image on screen.")
+                return [False, "Match failed. Cannot find template image on screen."]
     except Exception as err:
         myPrint(type(err))
         errTxt = f'matchImg error: {err}'
         myPrint(errTxt)
         return [False, errTxt]
-    if not result_tuple[0]:
-        # print("Error happens while matching template image. Error info: " + result_tuple[1])
-        return [False, "Error happens while matching template image. Error info: " + result_tuple[1]]
-    else:
-        result_dict = result_tuple[1]
-        if float(result_dict["width"]) != 0 and float(result_dict["height"]) != 0:
-            # print("Match success! [" + path.split(".")[0] + "] X: " + result_dict["x"] + ". Y: " + result_dict["y"] + ". Width: " + result_dict["width"] + ". Height: " + result_dict["height"])
-            return [float(result_dict["x"]), float(result_dict["y"]), float(result_dict["width"]), float(result_dict["height"])]
-        else:
-            # print("Match failed. Cannot find template image on screen.")
-            return [False, "Match failed. Cannot find template image on screen."]
 
 def onFighting():
     restAround()

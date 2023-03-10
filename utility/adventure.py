@@ -110,10 +110,12 @@ def __adventure_level_4():
     __secretCave()
 
 def __adventure_level_7():
-    myPrint("first herb")
-    posi = matchImg("sw_herb_fight.png")
+    myPrint("first class herb") # 一品药草
+    posi = matchImg("sw_herb.png")
     if posi[0]:
-        click(posi)
+        posi = matchImg("sw_herb_fight.png")
+        if posi[0]:
+            click(posi)
         return False
     return False
 

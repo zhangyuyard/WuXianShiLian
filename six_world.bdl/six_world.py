@@ -23,6 +23,7 @@ finally:
 
 from utility.common import *
 from utility.adventure import *
+from utility.experience import pickupAndClose
 
 # 缓存的坐标
 Position = {
@@ -55,12 +56,46 @@ curLevel = 0
 maxLevel = 7
 # 当前状态
 curStatus = StatusDict["PRE_READY"]
+# 卡住了
+isStuck = 0
 
 #
 fighting = False
 # 捕捉宠物是否结束
 catchingEnd = True
 
+def checkStuck():
+    global isStuck
+    # 战斗结束
+    posi_fail = matchImg("fight_fail.png")
+    posi_victory = matchImg("fight_victory.png")
+    if posi_fail[0] or posi_victory[0]:
+        posi = matchImg("leave.png")
+        if posi[0]:
+            click(posi)
+            setCurStatus("PRE_READY")
+            isStuck = 0
+            return
+    mySleep(1)
+    # 拾取
+    mySleep(1)
+    posi = matchImg("pickupandclose.png")
+    if posi[0]:
+        click(posi)
+        setCurStatus("PRE_READY")
+        isStuck = 0
+        return
+    mySleep(1)
+    # 选地图
+    posi = matchImg("sw_select_map_panel.png")
+    if posi[0]:
+        setCurStatus("END")
+        isStuck = 0
+        return
+    mySleep(1)
+    # 什么都没有，可能识图误判，回归流程
+    setCurStatus("PRE_READY")
+    return
 
 def leave (straight = False):
     '''检测是否战斗结束 离开'''
@@ -248,6 +283,7 @@ def inTheMap():
 
 def questDone():
     global Position
+    global isStuck
     myPrint("questDone", 1)
     posi = matchImg("sw_quest_done.png")
     # 探索度100%
@@ -261,22 +297,32 @@ def questDone():
                 click(cache)
                 setCurStatus("END")
             else:
+                if isStuck == 1: # 没找到怪，又没找到退出地图
+                    isStuck = 2
                 setCurStatus("PRE_READY")
             return True
         else:
             click(cache)
             setCurStatus("END")
     else:
+        if isStuck == 1: # 没找到怪，又没找到探索度100%
+            isStuck = 2
         setCurStatus("PRE_READY")
     return False
 
 def clickMonsterCard():
+    global isStuck
     t_start = time.perf_counter()
     posi = [False, ""]
+    # 没找到怪，也没退出，据观察，可能在战斗结束界面，也可能在选择地图界面，leave一下试试
+    if isStuck == 2:
+        myPrint("maybe is stuck, leaving...")
+        checkStuck()
+        return
     while(True):
         t_passed = int(float(time.perf_counter() - t_start))
         myPrint("seek in monster " + str(t_passed), 2)
-        if t_passed > 5 or curStatus == StatusDict["END"]:
+        if t_passed > 2 or curStatus == StatusDict["END"]:
             break
 
         posi = matchImg("sw_white_border.png")
@@ -287,11 +333,14 @@ def clickMonsterCard():
             break
 
     if posi[0]:
+        isStuck = 0
         mapPosi = [posi[0] + posi[2] * 2, posi[1] + (posi[3] / 2)]
         click(mapPosi)
         myPrint("click Monster Card")
         setCurStatus("READY")
     else:
+        # 未找到怪物
+        isStuck = 1 # 作为异常，记录一次
         myPrint("not found monster card")
         questDone()
 
@@ -349,13 +398,13 @@ def touchAltar():
     return False
 
 def closePets():
-    global catchingEnd
+    # 抓到或逃跑 抓宠结束
     myPrint("look for closeBtn")
-    closeBtn = matchImg("sw_pet_escape.png")
+    closeBtn = matchImg("sw_pet_escape.png") # 关闭按钮
     if closeBtn[0]:
         myPrint("press the close button")
-        catchingEnd = True
         click(closeBtn)
+        setCurStatus("PRE_READY")
         return True
     if curStatus != StatusDict["PAUSE"]:
         setCurStatus("PRE_READY")
@@ -367,34 +416,30 @@ def catchBtn():
         cbtn = Position["sw_catching_pet"]
     else:
         cbtn = matchImg("sw_catching_pet.png")
+        if cbtn[0]:
+            Position["sw_catching_pet"] = cbtn
+
     if cbtn[0]:
         click(cbtn)
-        Position["sw_catching_pet"] = cbtn
         return True
     return False
 
-def catchPetsThread(lock):
+def catchPetsDetail():
     global catchingEnd
-
-    lock.acquire()
-    try:
-        t_start = time.perf_counter()
-        while(True):
-            if closePets():
-                break
-            if catchingEnd:
-                break
-            t_passed = int(float(time.perf_counter() - t_start))
-            p = matchImg("sw_catched.png", 0.8, 10)
-            myPrint("catching time: " + str(t_passed))
-            if t_passed > 15 or p[0]:
-                catchBtn() # 点击 捕捉
-                catchingEnd = True
-                setCurStatus("PRE_READY")
-                break
-        return False
-    finally:
-        lock.release()
+    t_start = time.time()
+    while(True):
+        if catchingEnd:
+            break
+        t_passed = int(float(time.time() - t_start))
+        myPrint(f'catching used tiem ... {t_passed}')
+        p = matchImg("sw_catched.png", 0.98)
+        # if p[0]:
+        if p[0] or t_passed > 15:
+            myPrint("matching catched condition")
+            catchBtn() # 点击 捕捉
+            catchingEnd = True
+        mySleep(0.001)
+    closePets()
 
 def catchPets():
     '''捕捉宠物'''
@@ -405,16 +450,7 @@ def catchPets():
     if posi[0]:
         Position["sw_catching_pet"] = posi
         setCurStatus("PAUSE")
-        # click(posi)
-        # mySleep(1)
-        # _thread.start_new_thread(catchPetsThread, ("thread-",))
-        lock = threading.Lock()
-        # for i in range(5):
-        for i in range(multiprocessing.cpu_count()):
-            t = threading.Thread(target=catchPetsThread, args=(lock,), daemon=True)
-            t.start()
-            t.join()
-        # catchPetsThread()
+        catchPetsDetail()
     else:
         closePets()
     return False
@@ -457,6 +493,7 @@ def autofight():
         return True
 
 def enterFight (times):
+    global fighting
     while(times):
         if fighting:
             if autofight():

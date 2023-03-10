@@ -31,6 +31,7 @@ def identifyCoordinate():
 coordinate = identifyCoordinate()
 if coordinate[0]:
     mainFight(coordinate, 10)
+    # mainFight(coordinate, 500)
 
 device.disconnect()
 

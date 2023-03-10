@@ -36,7 +36,9 @@ def identifyCoordinate():
     
 coordinate = identifyCoordinate()
 if coordinate[0]:
-    mainFight(coordinate[5], 999)
+    # mainFight(coordinate[5], 999)
+    # mainFight(coordinate[5], 70)
+    mainFight(coordinate[5], 30)
 
 device.disconnect()
 
