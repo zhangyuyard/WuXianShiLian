@@ -18,56 +18,57 @@ except:
 finally:
     sys.path.append(pwd)
 
-from utility.common import *
+import utility.common as common
 
 
 def leave (straight = False):
-    posi_fail = matchImg("fight_fail.png")
-    posi_victory = matchImg("fight_victory.png")
-    posi_leave = matchImg("leave.png")
+    posi_fail = common.matchImg("fight_fail.png")
+    posi_victory = common.matchImg("fight_victory.png")
+    posi_leave = common.matchImg("leave.png")
 
     if straight:
-        click(posi_leave)
+        common.click(posi_leave)
         return True
     else:
         if posi_fail[0]:
-            click(posi_leave)
+            common.myPrint("challenge failed")
+            common.click(posi_leave)
             return False
         if posi_victory[0]:
-            myPrint("challenge failed")
-            click(posi_leave)
+            common.click(posi_leave)
             return True
     return True
 
 def ensure():
     ''' 确认 '''
-    myPrint("challenge successed")
-    click(matchImg("ensure.png"))
+    common.myPrint("challenge successed")
+    common.click(matchImg("ensure.png"))
+
 def next():
-    myPrint("next challenge")
-    click(matchImg("challenge_next.png"))
-    checkAutoFight()
+    common.myPrint("next challenge")
+    common.click(matchImg("challenge_next.png"))
+    common.checkAutoFight()
 
 def sweep():
-    posi = matchImg("sweep.png")
+    posi = common.matchImg("sweep.png")
     if posi[0]:
-        click(posi)
+        common.click(posi)
 
 def challengeNext():
-    myPrint("script start")
-    mySleep(2)
+    common.myPrint("script start")
+    common.mySleep(2)
     sweep()
-    mySleep(2)
+    ensure()
     next()
     while(True):
         res = leave()
         ensure()
         next()
         if not res:
-            myPrint("challenge end")
+            common.myPrint("challenge end")
             break
-        mySleep(1)
-            
+        common.mySleep(1)
+
 
 challengeNext()
 

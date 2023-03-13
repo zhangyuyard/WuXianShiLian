@@ -10,30 +10,30 @@ def leave (straight = False):
         t_e = time.perf_counter()
         t_diff = round(t_e - t_s, 2)
         myPrint("on fighting..." + str(t_diff))
-        
+
         posi_fail = matchImg("fight_fail.png")
         posi_victory = matchImg("fight_victory.png")
-        posi_leave = matchImg("leave.png")
+        
         if posi_fail[0]:
             break
         if posi_victory[0]:
-            break
-        if posi_leave[0]:
             break
         if not onFighting():
             break
         if (t_diff > 90):
             break
-
-    click(posi_leave)
+    posi_leave = matchImg("leave.png")
     # 直接离开，没有战利品
     if straight:
+        click(posi_leave)
         return False
     else:
         # 战斗失败，没有战利品
         if posi_fail[0]:
+            click(posi_leave)
             return False
         if posi_victory[0]:
+            click(posi_leave)
             return True
     return True
 

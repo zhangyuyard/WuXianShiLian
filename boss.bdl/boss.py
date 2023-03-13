@@ -1,10 +1,5 @@
 #!/usr/bin/python3
 
-
-# from zxtouch.client import zxtouch
-# from zxtouch.touchtypes import *
-# from zxtouch.toasttypes import *
-
 import time, os, sys
 pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
 try:
@@ -12,8 +7,6 @@ try:
     li = pwd.split("/")
     if len(li) <= 2:
         pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
-    # device = zxtouch("127.0.0.1") # create instance
-    # device.show_toast(TOAST_MESSAGE, pwd, 10)
 except:
     pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
 finally:
