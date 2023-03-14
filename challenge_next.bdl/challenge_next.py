@@ -20,59 +20,59 @@ finally:
 
 import utility.common as common
 
+wasSweep = False
 
-def leave (straight = False):
-    posi_fail = common.matchImg("fight_fail.png")
-    posi_victory = common.matchImg("fight_victory.png")
+def leave (victory, fail):
+    # posi_fail = common.matchImg("fight_fail.png")
+    # posi_victory = common.matchImg("fight_victory.png")
     posi_leave = common.matchImg("leave.png")
 
-    if straight:
+    if victory[0]:
         common.click(posi_leave)
         return True
-    else:
-        if posi_fail[0]:
-            common.myPrint("challenge failed")
-            common.click(posi_leave)
-            return False
-        if posi_victory[0]:
-            common.click(posi_leave)
-            return True
-    return True
+    if fail[0]:
+        common.myPrint("challenge failed")
+        common.click(posi_leave)
+        return False
 
 def ensure():
     ''' 确认 '''
     common.myPrint("challenge successed")
-    common.click(matchImg("ensure.png"))
+    common.click(common.matchImg("ensure.png"))
 
 def next():
     common.myPrint("next challenge")
-    common.click(matchImg("challenge_next.png"))
-    common.checkAutoFight()
+    common.click(common.matchImg("challenge_next.png"))
 
 def sweep():
-    posi = common.matchImg("sweep.png")
-    if posi[0]:
-        common.click(posi)
+    global wasSweep
+    if wasSweep:
+        return True
+    else:
+        posi = common.matchImg("sweep.png")
+        if posi[0]:
+            common.click(posi)
+            wasSweep = True
 
 def challengeNext():
     common.myPrint("script start")
     common.mySleep(2)
-    sweep()
-    ensure()
-    next()
     while(True):
-        res = leave()
-        ensure()
-        next()
-        if not res:
-            common.myPrint("challenge end")
-            break
+        # 是否在战斗中
+        fightRes = common.onFighting()
+        if not fightRes[0]:
+            if not leave(fightRes[1], fightRes[2]):
+                common.myPrint("challenge end")
+                break
+            sweep()
+            ensure()
+            next()
         common.mySleep(1)
 
 
 challengeNext()
 
-device.disconnect()
+common.device.disconnect()
 
 
 

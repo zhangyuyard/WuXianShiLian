@@ -17,16 +17,16 @@ device = zxtouch(ipAddr) # create instance
 
 rootPath = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
 
+# 是否勾选自动战斗
+wasAuto = False
 def restAround():
     posi = matchImg("rest_around.png")
     if posi[0]:
         click(posi)
 
-# 是否勾选自动战斗
-wasAuto = False
 def checkAutoFight():
-    restAround()
     global wasAuto
+    restAround()
     if not wasAuto:
         posi = matchImg("autofight_on.png", 0.95)
         if not posi[0]:
@@ -78,15 +78,19 @@ def matchImg(path, acceptable_value=0.8, max_try_times=5, scaleRation=0.8):
         return [False, errTxt]
 
 def onFighting():
-    restAround()
-    posi = matchImg("autofight_on.png", 0.95)
-    if posi[0]:
-        return True
+    checkAutoFight()
+    fightOn = matchImg("autofight_on.png", 0.95)
+    fightOff = matchImg("autofight_off.png", 0.95)
+    posi_fail = matchImg("fight_fail.png")
+    posi_victory = matchImg("fight_victory.png")
+    if not posi_fail[0] and not posi_victory[0]:
+        if fightOn[0] or fightOff[0]:
+            # 战斗未结束 并且 有“自动战斗”标识 则说明正在战斗中
+            return [True, posi_victory, posi_fail]
+        else:
+            return [False, posi_victory, posi_fail]
     else:
-        posi = matchImg("autofight_off.png", 0.95)
-        if posi[0]:
-            return True
-    return False
+        return [False, posi_victory, posi_fail]
 
 
 

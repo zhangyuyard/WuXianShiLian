@@ -12,10 +12,11 @@ except:
 finally:
     sys.path.append(pwd)
 
-from utility.experience import *
+import utility.experience as experience
+import utility.common as common
 
 def identifyCoordinate():
-    p = matchImg("adventure_boss.png")
+    p = common.matchImg("adventure_boss.png")
     if p[0]:
         return ([p[0] + p[2], p[1] + p[3],])
     return (False,)
@@ -23,10 +24,10 @@ def identifyCoordinate():
 
 coordinate = identifyCoordinate()
 if coordinate[0]:
-    mainFight(coordinate, 10)
-    # mainFight(coordinate, 500)
+    experience.mainFight(coordinate, 10)
+    # experience.mainFight(coordinate, 500)
 
-device.disconnect()
+common.device.disconnect()
 
 
 

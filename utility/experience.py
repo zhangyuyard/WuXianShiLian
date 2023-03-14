@@ -1,41 +1,67 @@
 #!/usr/bin/python3
 
+import time, os, sys
+pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
+try:
+    pwd = os.getcwd().strip()
+    li = pwd.split("/")
+    if len(li) <= 2:
+        pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
+    # device = zxtouch("127.0.0.1") # create instance
+    # device.show_toast(TOAST_MESSAGE, pwd, 10)
+except:
+    pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
+finally:
+    sys.path.append(pwd)
 # 历练
-from utility.common import *
+import utility.common as common
+
+# 缓存的坐标
+Position = {
+    "leave": False,
+}
+
+def leavePosi():
+    global Position
+    posi_leave = []
+    if Position["leave"]:
+        posi_leave = Position["leave"]
+    else:
+        posi_leave = common.matchImg("leave.png")
+        Position["leave"] = posi_leave
+    return posi_leave
 
 def leave (straight = False):
     '''战斗结束 离开'''
-    t_s = time.perf_counter()
-    while(True):
-        t_e = time.perf_counter()
-        t_diff = round(t_e - t_s, 2)
-        myPrint("on fighting..." + str(t_diff))
-
-        posi_fail = matchImg("fight_fail.png")
-        posi_victory = matchImg("fight_victory.png")
-        
-        if posi_fail[0]:
-            break
-        if posi_victory[0]:
-            break
-        if not onFighting():
-            break
-        if (t_diff > 90):
-            break
-    posi_leave = matchImg("leave.png")
+    global Position
+    fightRes = []
+    posi_leave = leavePosi()
     # 直接离开，没有战利品
     if straight:
-        click(posi_leave)
-        return False
+        common.click(posi_leave)
+        return -1
     else:
+        t_s = time.time()
+        while(True):
+            t_diff = round(time.time() - t_s, 2)
+            fightRes = common.onFighting()
+            if not fightRes[0]:
+                break
+            common.myPrint(f"on fighting...{t_diff}")
+            if (t_diff > 90): # 一场战斗最多90s
+                break
+
+        posi_leave = leavePosi()
+        # posi_victory = common.matchImg("fight_victory.png")
+        if fightRes[1][0]:
+            common.click(posi_leave)
+            return 1 # 需要拾取战利品，返回True
+        # posi_fail = common.matchImg("fight_fail.png")
         # 战斗失败，没有战利品
-        if posi_fail[0]:
-            click(posi_leave)
-            return False
-        if posi_victory[0]:
-            click(posi_leave)
-            return True
-    return True
+        if fightRes[2][0]:
+            common.click(posi_leave)
+            return 0
+    return 2 # 既没成功，也没失败，属于异常
 
 
 timeStar = 0
@@ -44,57 +70,61 @@ def fightBegin(coordinate, times, count = 0, fail = 0):
     global timeStar
     global timeEnd
     count += 1
-    myPrint("round " + str(count) + " begin")
-    timeStar = time.perf_counter()
+    common.myPrint("round " + str(count) + " begin")
+    timeStar = time.time()
 
-    click(coordinate)
-    checkAutoFight()
-    res = fightEnd()
+    common.click(coordinate)
+    isEnd = fightEnd()
     times -= 1
-    timeEnd = time.perf_counter()
-    if res:
-        myPrint("round " + str(count) + " end(" + str(round(timeEnd - timeStar, 2)) + "s)")
+    timeEnd = time.time()
+    if isEnd:
+        common.myPrint("round " + str(count) + " end(" + str(round(timeEnd - timeStar, 2)) + "s)")
     else:
         fail += 1
         times += 1
-        myPrint("round " + str(count) + " end(" + str(round(timeEnd - timeStar, 2)) + "s) failed")
+        common.myPrint("round " + str(count) + " end(" + str(round(timeEnd - timeStar, 2)) + "s) failed")
 
     if not times:
-        myPrint("fight end: victory: " + str(count - fail) + "｜defect：" + str(fail))
+        common.myPrint("fight end: victory: " + str(count - fail) + "｜defect：" + str(fail))
         return True
     else:
-        mySleep(1)
+        common.mySleep(1)
         fightBegin(coordinate, times, count, fail)
 
 def pickupAndClose():
-    myPrint("pick up all")
-    t_s = time.perf_counter()
+    common.myPrint("prepare pick up all")
+    t_s = time.time()
     while(True):
-        t_e = time.perf_counter()
-        t_diff = round(t_e - t_s, 2)
-        posi = matchImg("pickupandclose.png")
+        t_diff = round(time.time() - t_s, 2)
+        posi = common.matchImg("pickupandclose.png")
         if (t_diff > 5):
             break
         if posi[0]:
-            click(posi)
+            common.myPrint("pick up all")
+            common.click(posi)
             break
-    return posi[0]
+    return True
 
 def fightEnd():
-    myPrint("is fight end ?")
-    res = leave(False)
-    if res:
-        res = pickupAndClose()
-        if res:
-            myPrint("", 1)
-        return res
-    else:
-        myPrint("", 1)
-        return res
+    common.myPrint("is fight end ?")
+    awards = leave(False)
+    if awards == -1:
+        # 没有战利品，直接下一局
+        return [True,]
+    elif awards == 0:
+        # 失败
+        return [False,]
+    elif awards == 1:
+        # 成功 可能有战利品
+        return [pickupAndClose(),]
+    elif awards == 2:
+        # 异常
+        return [False,]
+
 
 def mainFight(coordinate, times):
-    mySleep(2)
-    myPrint("script begin")
+    common.mySleep(2)
+    common.myPrint("script begin")
     if coordinate:
         fightBegin(coordinate, times)
 

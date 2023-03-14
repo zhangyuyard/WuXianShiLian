@@ -1,53 +1,65 @@
 #!/usr/bin/python3
 
 
+import time, os, sys
+pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
+try:
+    pwd = os.getcwd().strip()
+    li = pwd.split("/")
+    if len(li) <= 2:
+        pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
+    # device = zxtouch("127.0.0.1") # create instance
+    # device.show_toast(TOAST_MESSAGE, pwd, 10)
+except:
+    pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
+finally:
+    sys.path.append(pwd)
+
 # 六界奇遇事件等
 
-from utility.common import *
-from utility.experience import *
+import utility.common as common
+import utility.experience as experience
+
 
 def __feilinguan():
     '''飞灵观 直接离开'''
-    myPrint("feilinguan")
-    posi = matchImg("sw_FeiLinGuan.png")
+    common.myPrint("feilinguan")
+    posi = common.matchImg("sw_FeiLinGuan.png")
     if posi[0]:
-        leave(True)
+        experience.leave(True)
 
 def __valley():
     '''valley'''
-    myPrint("valley")
-    posi = matchImg("sw_under_valley.png")
+    common.myPrint("valley")
+    posi = common.matchImg("sw_under_valley.png")
     if posi[0]:
-        posi = matchImg("sw_dash.png")
+        posi = common.matchImg("sw_dash.png")
         if posi[0]:
-            click(posi)
-            mySleep(0.5)
+            common.click(posi)
             return True
         return False
     return False
 
 def __innerHouse():
     '''茅屋内'''
-    myPrint("innerHouse")
-    posi = matchImg("sw_house_inner.png")
+    common.myPrint("innerHouse")
+    posi = common.matchImg("sw_house_inner.png")
     if posi[0]:
-        posi = matchImg("sw_pick_book.png")
+        posi = common.matchImg("sw_pick_book.png")
         if posi[0]:
-            click(posi)
-            mySleep(0.5)
+            common.click(posi)
             return True
         return False
     return False
 
 def __cliff():
     '''掉入悬崖'''
-    myPrint("cliff")
-    posi = matchImg("sw_cliff.png")
+    common.myPrint("cliff")
+    posi = common.matchImg("sw_cliff.png")
     if posi[0]:
-        posi = matchImg("sw_rush_snake.png")
+        posi = common.matchImg("sw_rush_snake.png")
         if posi[0]:
-            click(posi)
-            mySleep(0.5)
+            common.click(posi)
             __valley()
             __innerHouse()
             return True
@@ -56,13 +68,13 @@ def __cliff():
 
 def __secretCave():
     '''隐秘山洞'''
-    myPrint("secretCave")
-    posi = matchImg("sw_secret_cave.png")
+    common.myPrint("secretCave")
+    posi = common.matchImg("sw_secret_cave.png")
     if posi[0]:
         if posi[0]:
             # 本职业的奇遇条件不满足，直接离开
-            leave(True)
-            mySleep(0.5)
+            experience.leave(True)
+            common.mySleep(0.5)
             return True
         # posi = matchImg("sw_push_jade_pendant.png")
         # if posi[0]:
@@ -74,24 +86,23 @@ def __secretCave():
 
 def __duxinmang():
     '''毒心蟒 战斗'''
-    myPrint("duxinmang")
-    posi = matchImg("sw_DuXinMang.png")
+    common.myPrint("duxinmang")
+    posi = common.matchImg("sw_DuXinMang.png")
     if posi[0]:
-        posi = matchImg("sw_DuXinMang_fight.png")
+        posi = common.matchImg("sw_DuXinMang_fight.png")
         if posi[0]:
-            click(posi)
-            mySleep(0.5)
-            fightEnd()
+            common.click(posi)
+            experience.fightEnd()
             return True
         return False
     return False
 
 def __xuemomenren():
     '''血魔门人'''
-    myPrint("xuemomenren")
-    posi = matchImg("sw_XueMoMenRen.png")
+    common.myPrint("xuemomenren")
+    posi = common.matchImg("sw_XueMoMenRen.png")
     if posi[0]:
-        posi = matchImg("sw_xmmr_fight.png")
+        posi = common.matchImg("sw_xmmr_fight.png")
         if posi[0]:
             click(posi)
         return False
@@ -110,12 +121,12 @@ def __adventure_level_4():
     __secretCave()
 
 def __adventure_level_7():
-    myPrint("first class herb") # 一品药草
-    posi = matchImg("sw_herb.png")
+    common.myPrint("first class herb") # 一品药草
+    posi = common.matchImg("sw_herb.png")
     if posi[0]:
-        posi = matchImg("sw_herb_fight.png")
+        posi = common.matchImg("sw_herb_fight.png")
         if posi[0]:
-            click(posi)
+            common.click(posi)
         return False
     return False
 
