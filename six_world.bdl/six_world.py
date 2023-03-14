@@ -105,9 +105,10 @@ def pickupAndClose():
 
 def fightEnd():
     res = experience.fightEnd()
-    if not res:
+    if not res[0]:
         setCurStatus("END")
-    return res
+        return False
+    return True
 
 def clickSixWorld(posi):
     common.myPrint("find and click six workd btn")
@@ -322,7 +323,7 @@ def catchPetsDetail():
             break
         t_passed = int(float(time.time() - t_start))
         common.myPrint(f'catching used tiem ... {t_passed}')
-        p = common.matchImg("sw_catched.png", 0.9, 10)
+        p = common.matchImg("sw_catched.png", 0.95, 10)
         if p[0] or t_passed > 15:
             common.myPrint("actions for catch pets")
             catchBtn() # 点击 捕捉

@@ -18,13 +18,13 @@ import utility.common as common
 
 # 缓存的坐标
 Position = {
-    "leave": False,
+    "leave": [False,],
 }
 
 def leavePosi():
     global Position
     posi_leave = []
-    if Position["leave"]:
+    if Position["leave"][0]:
         posi_leave = Position["leave"]
     else:
         posi_leave = common.matchImg("leave.png")
@@ -38,6 +38,7 @@ def leave (straight = False):
     posi_leave = leavePosi()
     # 直接离开，没有战利品
     if straight:
+        common.myPrint("direactly quit without fight")
         common.click(posi_leave)
         return -1
     else:
@@ -54,13 +55,16 @@ def leave (straight = False):
         posi_leave = leavePosi()
         # posi_victory = common.matchImg("fight_victory.png")
         if fightRes[1][0]:
+            common.myPrint("fighting victory")
             common.click(posi_leave)
             return 1 # 需要拾取战利品，返回True
         # posi_fail = common.matchImg("fight_fail.png")
         # 战斗失败，没有战利品
         if fightRes[2][0]:
+            common.myPrint("fighting failure")
             common.click(posi_leave)
             return 0
+    common.myPrint("fighting unkonw")
     return 2 # 既没成功，也没失败，属于异常
 
 
