@@ -27,13 +27,14 @@ def leave (victory, fail):
     # posi_victory = common.matchImg("fight_victory.png")
     posi_leave = common.matchImg("leave.png")
 
-    if victory[0]:
-        common.click(posi_leave)
-        return True
     if fail[0]:
         common.myPrint("challenge failed")
         common.click(posi_leave)
-        return False
+        return False # 失败则会结束挑战，否则继续
+    else:
+        if victory[0]:
+            common.click(posi_leave)
+        return True
 
 def ensure():
     ''' 确认 '''
@@ -56,7 +57,6 @@ def sweep():
 
 def challengeNext():
     common.myPrint("script start")
-    common.mySleep(2)
     while(True):
         # 是否在战斗中
         fightRes = common.onFighting()
