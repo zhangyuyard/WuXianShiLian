@@ -5,6 +5,9 @@ from zxtouch.client import zxtouch
 from zxtouch.touchtypes import *
 from zxtouch.toasttypes import *
 import time, os, sys
+import threading
+import multiprocessing
+import re
 
 addrs = [
 "127.0.0.1", #手机本地
@@ -53,6 +56,19 @@ def click(pos, delay=1):
         mySleep(0.1)
         device.touch(TOUCH_UP, 1, pos[0], pos[1])
         mySleep(delay)
+# utils
+def safe_float(s):
+    try:
+        return float(s)
+    except ValueError:
+        nums, other = nusplit_and_convert(s)
+        return nums  # 转换失败，返回默认值
+def split_and_convert(s):
+    pattern = r'([\d\.]+)'  # 匹配数字和小数点的正则表达式
+    nums = re.findall(pattern, s, re.DOTALL)  # 查找所有匹配的数字和小数点
+    nums = [float(num) for num in nums]  # 将数字列表中的字符串转换为浮点数
+    other = re.sub(pattern, '', s, flags=re.DOTALL)  # 将字符串中的数字和小数点替换为空，得到剩余的字符
+    return nums, other
 
 def matchImg(path, acceptable_value=0.8, max_try_times=5, scaleRation=0.8):
     # 图片长宽不可过大，否则报错，string index out of range
@@ -65,15 +81,19 @@ def matchImg(path, acceptable_value=0.8, max_try_times=5, scaleRation=0.8):
             return [False, "Error happens while matching template image. Error info: " + result_tuple[1]]
         else:
             result_dict = result_tuple[1]
-            if float(result_dict["width"]) != 0 and float(result_dict["height"]) != 0:
+            x = safe_float(result_dict["x"])
+            y = safe_float(result_dict["y"])
+            width = safe_float(result_dict["width"])
+            height = safe_float(result_dict["height"])
+            if width != 0 and height != 0:
                 # print("Match success! [" + path.split(".")[0] + "] X: " + result_dict["x"] + ". Y: " + result_dict["y"] + ". Width: " + result_dict["width"] + ". Height: " + result_dict["height"])
-                return [float(result_dict["x"]), float(result_dict["y"]), float(result_dict["width"]), float(result_dict["height"])]
+                return [x, y, width, height]
             else:
                 # print("Match failed. Cannot find template image on screen.")
                 return [False, "Match failed. Cannot find template image on screen."]
     except Exception as err:
         myPrint(type(err))
-        errTxt = f'matchImg error: {err}'
+        errTxt = f'matchImg({path}) error: {err}'
         myPrint(errTxt)
         return [False, errTxt]
 
@@ -91,6 +111,24 @@ def onFighting():
             return [False, posi_victory, posi_fail]
     else:
         return [False, posi_victory, posi_fail]
+
+def run_threads(funcName):
+    def wrapFunc(idx):
+        myPrint(f"launch thread-{idx}")
+        try:
+            funcName(idx)
+        finally:
+            return True
+
+    num_threads = multiprocessing.cpu_count() / 2
+    threads = []
+    for i in range(max(round(num_threads), 2)):
+        my_args = (i,)
+        thread = threading.Thread(target=wrapFunc, args=my_args)
+        thread.start()
+        threads.append(thread)
+    for thread in threads:
+        thread.join()
 
 
 
