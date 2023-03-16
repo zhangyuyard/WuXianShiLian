@@ -23,14 +23,16 @@ import utility.experience as experience
 
 def __feilinguan():
     '''飞灵观 直接离开'''
-    common.myPrint("feilinguan")
+    # common.myPrint("feilinguan")
     posi = common.matchImg("sw_FeiLinGuan.png")
     if posi[0]:
         experience.leave(True)
+        return True
+    return False
 
 def __valley():
     '''valley'''
-    common.myPrint("valley")
+    # common.myPrint("valley")
     posi = common.matchImg("sw_under_valley.png")
     if posi[0]:
         posi = common.matchImg("sw_dash.png")
@@ -42,7 +44,7 @@ def __valley():
 
 def __innerHouse():
     '''茅屋内'''
-    common.myPrint("innerHouse")
+    # common.myPrint("innerHouse")
     posi = common.matchImg("sw_house_inner.png")
     if posi[0]:
         posi = common.matchImg("sw_pick_book.png")
@@ -54,7 +56,7 @@ def __innerHouse():
 
 def __cliff():
     '''掉入悬崖'''
-    common.myPrint("cliff")
+    # common.myPrint("cliff")
     posi = common.matchImg("sw_cliff.png")
     if posi[0]:
         posi = common.matchImg("sw_rush_snake.png")
@@ -68,13 +70,12 @@ def __cliff():
 
 def __secretCave():
     '''隐秘山洞'''
-    common.myPrint("secretCave")
+    # common.myPrint("secretCave")
     posi = common.matchImg("sw_secret_cave.png")
     if posi[0]:
         if posi[0]:
             # 本职业的奇遇条件不满足，直接离开
             experience.leave(True)
-            common.mySleep(0.5)
             return True
         # posi = matchImg("sw_push_jade_pendant.png")
         # if posi[0]:
@@ -86,7 +87,7 @@ def __secretCave():
 
 def __duxinmang():
     '''毒心蟒 战斗'''
-    common.myPrint("duxinmang")
+    # common.myPrint("duxinmang")
     posi = common.matchImg("sw_DuXinMang.png")
     if posi[0]:
         posi = common.matchImg("sw_DuXinMang_fight.png")
@@ -99,29 +100,37 @@ def __duxinmang():
 
 def __xuemomenren():
     '''血魔门人'''
-    common.myPrint("xuemomenren")
+    # common.myPrint("xuemomenren")
     posi = common.matchImg("sw_XueMoMenRen.png")
     if posi[0]:
         posi = common.matchImg("sw_xmmr_fight.png")
         if posi[0]:
             click(posi)
+            return True
         return False
     return False
 
 def __adventure_level_4():
+    common.myPrint("adventure_level_4")
+    res = True
     # 飞灵观
-    __feilinguan()
-    # 毒心蟒
-    __duxinmang()
-    # 掉入悬崖
-    __cliff()
-    # 血魔门人
-    __xuemomenren()
-    # 隐秘洞穴
-    __secretCave()
+    res = __feilinguan()
+    if not res:
+        # 毒心蟒
+        res = __duxinmang()
+    elif not res:
+        # 掉入悬崖
+        res = __cliff()
+    elif not res:
+        # 血魔门人
+       res = __xuemomenren()
+    elif not res:
+        # 隐秘洞穴
+       res = __secretCave()
 
 def __adventure_level_7():
-    common.myPrint("first class herb") # 一品药草
+    common.myPrint("adventure_level_7")
+    # common.myPrint("first class herb") # 一品药草
     posi = common.matchImg("sw_herb.png")
     if posi[0]:
         posi = common.matchImg("sw_herb_fight.png")

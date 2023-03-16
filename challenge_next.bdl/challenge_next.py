@@ -38,12 +38,20 @@ def leave (victory, fail):
 
 def ensure():
     ''' 确认 '''
-    common.myPrint("challenge successed")
-    common.click(common.matchImg("ensure.png"))
+    posi = common.matchImg("ensure.png")
+    if posi[0]:
+        common.click(posi)
+        common.myPrint("confirm to getting some things")
 
-def next():
-    common.myPrint("next challenge")
-    common.click(common.matchImg("challenge_next.png"))
+def next(times):
+    posi = common.matchImg("challenge_next.png")
+    if posi[0]:
+        common.click(posi)
+        times += 1
+        common.myPrint(f"challenge successed {times}, go to next challenge")
+    return times
+
+
 
 def sweep():
     global wasSweep
@@ -57,6 +65,7 @@ def sweep():
 
 def challengeNext():
     common.myPrint("script start")
+    times = 0
     while(True):
         # 是否在战斗中
         fightRes = common.onFighting()
@@ -66,8 +75,9 @@ def challengeNext():
                 break
             sweep()
             ensure()
-            next()
+            times = next(times)
         common.mySleep(1)
+    common.myPrint(f"challenging is done, sum of {times}")
 
 
 challengeNext()

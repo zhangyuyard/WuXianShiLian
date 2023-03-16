@@ -5,7 +5,7 @@
 # from zxtouch.touchtypes import *
 # from zxtouch.toasttypes import *
 # import _thread
-import threading, multiprocessing
+import threading
 
 import time, os, sys
 pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
@@ -61,6 +61,10 @@ isStuck = 0
 
 #
 fighting = False
+catchingEnd = False
+
+threadLock = threading.Lock()
+
 
 def checkStuck():
     global isStuck
@@ -243,7 +247,6 @@ def withFight():
         common.myPrint("batter with sb")
         Position["sw_with_fight"] = posi
         common.click(posi)
-        common.checkAutoFight()
         fightEnd()
         return True
 
@@ -288,16 +291,17 @@ def touchAltar():
     return False
 
 def closePets():
+    global catchingEnd
     # 抓到或逃跑 抓宠结束
-    common.myPrint("look for closeBtn")
     closeBtn = common.matchImg("sw_pet_escape.png") # 关闭按钮
     if closeBtn[0]:
-        common.myPrint("press the close button")
+        common.myPrint(f"press the close button")
         common.click(closeBtn)
-        setCurStatus("PRE_READY")
+        catchingEnd = True
         return True
-    if curStatus != StatusDict["PAUSE"]:
-        setCurStatus("PRE_READY")
+    # if curStatus != StatusDict["PAUSE"]:
+    #     setCurStatus("PRE_READY")
+    common.myPrint(f"not find the closeBtn")
     return False
 
 def catchBtn():
@@ -311,23 +315,48 @@ def catchBtn():
 
     if cbtn[0]:
         common.click(cbtn)
+        common.myPrint(f"touch catchBtn")
         return True
     return False
 
+def findPetPoint():
+    # threadLock.acquire()
+    if catchingEnd:
+        return True
+    p = common.matchImg("sw_catched.png", 0.95, 10)
+    if p[0]:
+        catchBtn()
+        closePets() # 点击 关闭
+    # threadLock.release()
 def catchPetsDetail():
-    catchingEnd = False
+    global catchingEnd
+
     t_start = time.time()
     while(True):
         if catchingEnd:
-            closePets()
             break
-        t_passed = int(float(time.time() - t_start))
+        t_passed = common.spendTime(t_start)
         common.myPrint(f'catching used tiem ... {t_passed}')
-        p = common.matchImg("sw_catched.png", 0.95, 10)
-        if p[0] or t_passed > 15:
-            common.myPrint("actions for catch pets")
-            catchBtn() # 点击 捕捉
-            catchingEnd = True
+        if t_passed > 15:
+            catchBtn()
+            closePets() # 点击 关闭
+        common.run_threads(findPetPoint)
+    setCurStatus("PRE_READY")
+    catchingEnd = False
+
+# def catchPetsDetail():
+#     global catchingEnd
+#     t_start = time.time()
+#     while(True):
+#         t_passed = int(float(time.time() - t_start))
+#         common.myPrint(f'catching used tiem ... {t_passed}')
+
+#         p = common.matchImg("sw_catched.png", 0.95, 10)
+#         if p[0] or t_passed > 15 or catchingEnd:
+#             catchBtn() # 点击 捕捉
+#             break
+#     closePets() # 点击 关闭
+#     setCurStatus("PRE_READY")
 
 def catchPets():
     '''捕捉宠物'''

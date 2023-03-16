@@ -114,13 +114,13 @@ def onFighting():
 
 def run_threads(funcName):
     def wrapFunc(idx):
-        myPrint(f"launch thread-{idx}")
         try:
             funcName(idx)
         finally:
             return True
 
-    num_threads = multiprocessing.cpu_count() / 2
+    num_threads = multiprocessing.cpu_count()
+    # num_threads = multiprocessing.cpu_count() / 2
     threads = []
     for i in range(max(round(num_threads), 2)):
         my_args = (i,)
@@ -128,7 +128,11 @@ def run_threads(funcName):
         thread.start()
         threads.append(thread)
     for thread in threads:
+        # myPrint(f"launch thread-{thread}")
         thread.join()
+
+def spendTime(t_start):
+    return round(time.time() - t_start, 2)
 
 
 

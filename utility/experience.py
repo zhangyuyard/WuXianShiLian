@@ -44,7 +44,7 @@ def leave (straight = False):
     else:
         t_s = time.time()
         while(True):
-            t_diff = round(time.time() - t_s, 2)
+            t_diff = common.spendTime(t_s)
             fightRes = common.onFighting()
             if not fightRes[0]:
                 break
@@ -92,7 +92,6 @@ def fightBegin(coordinate, times, count = 0, fail = 0):
         common.myPrint("fight end: victory: " + str(count - fail) + "｜defect：" + str(fail))
         return True
     else:
-        common.mySleep(1)
         fightBegin(coordinate, times, count, fail)
 
 def pickupAndClose():
