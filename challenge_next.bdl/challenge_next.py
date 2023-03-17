@@ -47,9 +47,8 @@ def next(times):
     posi = common.matchImg("challenge_next.png")
     if posi[0]:
         common.click(posi)
-        times += 1
-        common.myPrint(f"challenge successed {times}, go to next challenge")
-    return times
+        return True
+    return False
 
 
 
@@ -73,9 +72,12 @@ def challengeNext():
             if not leave(fightRes[1], fightRes[2]):
                 common.myPrint("challenge end")
                 break
+            else:
+                times += 1
+                common.myPrint(f"challenge successed {times}, go to next challenge")
             sweep()
             ensure()
-            times = next(times)
+            next()
         common.mySleep(1)
     common.myPrint(f"challenging is done, sum of {times}")
 

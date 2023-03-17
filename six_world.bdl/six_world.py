@@ -7,7 +7,7 @@
 # import _thread
 import threading
 
-import time, os, sys
+import time, os, sys, random
 pwd = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
 try:
     pwd = os.getcwd().strip()
@@ -109,10 +109,16 @@ def pickupAndClose():
 
 def fightEnd():
     res = experience.fightEnd()
-    if not res[0]:
+    if res[0] == True:
+        return True
+    elif res[0] == False:
         setCurStatus("END")
         return False
-    return True
+    elif res[0] == 2:
+        # 没成功也没失败，返回到PRE_READY
+        setCurStatus("PRE_READY")
+        return 2
+    
 
 def clickSixWorld(posi):
     common.myPrint("find and click six workd btn")
@@ -319,25 +325,27 @@ def catchBtn():
         return True
     return False
 
-def findPetPoint():
-    # threadLock.acquire()
+def findPetPoint(idx):
     if catchingEnd:
         return True
-    p = common.matchImg("sw_catched.png", 0.95, 10)
-    if p[0]:
-        catchBtn()
-        closePets() # 点击 关闭
-    # threadLock.release()
+    with threadLock:
+        p = common.matchImg("sw_catched.png", 0.974, 10)
+        common.myPrint(f"thread {idx} working now...")
+        if p[0]:
+            catchBtn()
+            closePets() # 点击 关闭
+            common.myPrint(f"thread {idx} find pet point")
 def catchPetsDetail():
     global catchingEnd
 
     t_start = time.time()
+    t_max = random.randrange(10, 30)
     while(True):
-        if catchingEnd:
-            break
         t_passed = common.spendTime(t_start)
-        common.myPrint(f'catching used tiem ... {t_passed}')
-        if t_passed > 15:
+        if catchingEnd:
+            common.myPrint(f'catching used tiem ... {t_passed}/{t_max}')
+            break
+        if t_passed > t_max:
             catchBtn()
             closePets() # 点击 关闭
         common.run_threads(findPetPoint)

@@ -24,21 +24,24 @@ Position = {
 def leavePosi():
     global Position
     posi_leave = []
-    if Position["leave"][0]:
-        posi_leave = Position["leave"]
-    else:
+    while(True):
+        # if Position["leave"][0]:
+        #     posi_leave = Position["leave"]
+        # else:
         posi_leave = common.matchImg("leave.png")
-        Position["leave"] = posi_leave
+        if posi_leave[0]:
+            Position["leave"] = posi_leave
+            break
     return posi_leave
 
 def leave (straight = False):
     '''战斗结束 离开'''
     global Position
     fightRes = []
-    posi_leave = leavePosi()
     # 直接离开，没有战利品
     if straight:
         common.myPrint("direactly quit without fight")
+        posi_leave = leavePosi()
         common.click(posi_leave)
         return -1
     else:
@@ -109,7 +112,7 @@ def pickupAndClose():
     return True
 
 def fightEnd():
-    common.myPrint("is fight end ?")
+    common.myPrint("wait for fighting end")
     awards = leave(False)
     if awards == -1:
         # 没有战利品，直接下一局
@@ -122,7 +125,7 @@ def fightEnd():
         return [pickupAndClose(),]
     elif awards == 2:
         # 异常
-        return [False,]
+        return [2,]
 
 
 def mainFight(coordinate, times):
