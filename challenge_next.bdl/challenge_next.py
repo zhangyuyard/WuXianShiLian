@@ -43,7 +43,7 @@ def ensure():
         common.click(posi)
         common.myPrint("confirm to getting some things")
 
-def next(times):
+def next():
     posi = common.matchImg("challenge_next.png")
     if posi[0]:
         common.click(posi)

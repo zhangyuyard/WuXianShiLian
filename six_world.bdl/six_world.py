@@ -329,7 +329,7 @@ def findPetPoint(idx):
     if catchingEnd:
         return True
     with threadLock:
-        p = common.matchImg("sw_catched.png", 0.974, 10)
+        p = common.matchImg("sw_catched.png", 0.95, 10)
         common.myPrint(f"thread {idx} working now...")
         if p[0]:
             catchBtn()
@@ -339,7 +339,7 @@ def catchPetsDetail():
     global catchingEnd
 
     t_start = time.time()
-    t_max = random.randrange(10, 30)
+    t_max = random.randrange(5, 15)
     while(True):
         t_passed = common.spendTime(t_start)
         if catchingEnd:

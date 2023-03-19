@@ -37,9 +37,9 @@ def identifyCoordinate():
     
 coordinate = identifyCoordinate()
 if coordinate[0]:
-    # experience.mainFight(coordinate[5], 999)
+    experience.mainFight(coordinate[5], 99999)
     # experience.mainFight(coordinate[5], 70)
-    experience.mainFight(coordinate[5], 30)
+    # experience.mainFight(coordinate[5], 30)
 
 common.device.disconnect()
 

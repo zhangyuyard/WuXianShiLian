@@ -12,9 +12,9 @@ import re
 addrs = [
 "127.0.0.1", #手机本地
 "10.1.227.102", #客户端IP
-"192.168.8.151", #客户端IP
+"192.168.8.199", #客户端IP
 ]
-ipAddr = addrs[1]
+ipAddr = addrs[2]
 device = zxtouch(ipAddr) # create instance
 #device = zxtouch(addrs[1]) # create instance
 
