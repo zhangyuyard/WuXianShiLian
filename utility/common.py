@@ -8,17 +8,27 @@ import time, os, sys
 import threading
 import multiprocessing
 import re
+import configparser
 
-addrs = [
-"127.0.0.1", #手机本地
-"10.1.227.102", #客户端IP
-"192.168.8.199", #客户端IP
-]
-ipAddr = addrs[2]
+# 获取当前工作目录
+cwd = os.getcwd()
+# 拼接配置文件路径
+config_path = os.path.join(cwd, 'config.ini')
+
+config = configparser.ConfigParser()
+config.read(config_path)
+# 获取配置项
+ipAddr = config.get('addrs', 'client')
+rootPath = config.get('path', 'rootPath')
+
+
+# addrs = [
+# "127.0.0.1", #手机本地
+# "10.1.227.102", #客户端IP
+# "192.168.8.199", #客户端IP
+# ]
+
 device = zxtouch(ipAddr) # create instance
-#device = zxtouch(addrs[1]) # create instance
-
-rootPath = "/private/var/mobile/Library/ZXTouch/scripts/wxxx/"
 
 # 是否勾选自动战斗
 wasAuto = False
