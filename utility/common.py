@@ -144,6 +144,9 @@ def run_threads(funcName):
 def spendTime(t_start):
     return round(time.time() - t_start, 2)
 
+def getConfig(section, option):
+    return config.get(section, option)
+
 
 
 

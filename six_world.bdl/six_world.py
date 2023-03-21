@@ -473,13 +473,13 @@ def whereami():
     quest = common.matchImg("sw_leave_map.png") # 已进入地图
     return [sw, maps, quest]
 
-def mainFight(times = 60):
+def mainFight():
     common.myPrint("script begin")
     common.mySleep(1)
     enterFight(times)
 
 
-mainFight()
+mainFight(common.getConfig("fightTimes", "sixWorld"))
 
 common.device.disconnect()
 

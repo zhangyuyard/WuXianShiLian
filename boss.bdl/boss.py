@@ -24,7 +24,7 @@ def identifyCoordinate():
 
 coordinate = identifyCoordinate()
 if coordinate[0]:
-    experience.mainFight(coordinate, 10)
+    experience.mainFight(coordinate, common.getConfig("fightTimes", "boss"))
     # experience.mainFight(coordinate, 500)
 
 common.device.disconnect()
