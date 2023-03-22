@@ -132,7 +132,7 @@ def mainFight(coordinate, times):
     common.mySleep(2)
     common.myPrint("script begin")
     if coordinate:
-        fightBegin(coordinate, times)
+        fightBegin(coordinate, int(times))
 
 
 
