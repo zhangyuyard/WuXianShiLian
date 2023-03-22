@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # ignore config.ini file
-#config.ini
+config.ini
